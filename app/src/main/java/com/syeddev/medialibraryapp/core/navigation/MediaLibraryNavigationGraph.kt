@@ -1,48 +1,63 @@
 package com.syeddev.medialibraryapp.core.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
+import com.syeddev.medialibraryapp.core.base.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 @Composable
-fun MediaLibraryNavigationGraph() {
+fun MediaLibraryNavigationGraph(
+    baseViewModel: BaseViewModel = hiltViewModel<BaseViewModel>()
+) {
   //  ProvideRootNavController {
-        val rootNavController = localRootNavController.current
+  //  val rootNavController = localRootNavController.current
 
-        NavHost(
-            modifier = Modifier
-                .fillMaxSize(),
-            navController = rootNavController,
-            startDestination = Destination.MediaGallery,
-            enterTransition = {
-                fadeIn() + slideInHorizontally()
-            },
-            exitTransition = {
-                fadeOut() + slideOutHorizontally()
-            },
-            popEnterTransition = {
-                fadeIn() + slideInHorizontally()
-            },
-            popExitTransition = {
-                fadeOut() + slideOutHorizontally()
-            }
-        ) {
+    val internetStatus = baseViewModel.isInternetConnected.collectAsStateWithLifecycle()
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "InternetConnectionState : ${internetStatus.value}")
+    }
 
-        }
+
+//        NavHost(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            navController = rootNavController,
+//            startDestination = Destination.MediaGallery,
+//            enterTransition = {
+//                fadeIn() + slideInHorizontally()
+//            },
+//            exitTransition = {
+//                fadeOut() + slideOutHorizontally()
+//            },
+//            popEnterTransition = {
+//                fadeIn() + slideInHorizontally()
+//            },
+//            popExitTransition = {
+//                fadeOut() + slideOutHorizontally()
+//            }
+//        ) {
+//
+//        }
   //  }
 }
 

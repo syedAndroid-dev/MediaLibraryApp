@@ -1,4 +1,4 @@
-package com.syeddev.medialibraryapp.core
+package com.syeddev.medialibraryapp.core.base
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

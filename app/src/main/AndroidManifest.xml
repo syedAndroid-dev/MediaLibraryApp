@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name=".application.MediaLibraryApp"
@@ -16,7 +17,7 @@
         android:theme="@style/Theme.MediaLibraryApp"
         tools:targetApi="31">
         <activity
-            android:name=".core.BaseActivity"
+            android:name=".core.base.BaseActivity"
             android:exported="true"
             android:theme="@style/Theme.MediaLibraryApp">
             <intent-filter>
