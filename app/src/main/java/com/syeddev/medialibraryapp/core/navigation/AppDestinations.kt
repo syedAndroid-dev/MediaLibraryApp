@@ -5,6 +5,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Destination {
 
+
+    @Serializable
+    data object SignIn : Destination()
+
     @Serializable
     data object MediaGallery: Destination()
 

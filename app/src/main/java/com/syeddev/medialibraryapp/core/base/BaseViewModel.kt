@@ -10,11 +10,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BaseViewModel @Inject constructor(
-    private val connectivityManager: InternetConnectivityManager
+    connectivityManager: InternetConnectivityManager
 ) : ViewModel() {
+    val isInternetConnected = connectivityManager.isInternetConnected.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
-    val isInternetConnected = connectivityManager.isInternetConnected.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L), false
-    )
 }
