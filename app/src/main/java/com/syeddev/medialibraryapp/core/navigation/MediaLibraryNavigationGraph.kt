@@ -93,7 +93,7 @@ val localRootNavController =
 //                )
 //
 //                NavigationAction.NavigateUp -> navController.navigateUp()
-//
+//e
 //                NavigationAction.ClearCurrentParent -> navController.popBackStack(
 //                    route = Destination.Auth.SignIn,
 //                    inclusive = true

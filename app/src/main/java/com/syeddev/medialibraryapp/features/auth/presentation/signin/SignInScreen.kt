@@ -20,24 +20,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.Span
-import com.syeddev.medialibraryapp.core.navigation.MediaLibraryNavigationGraph
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 import com.syeddev.medialibraryapp.core.utils.svgicons.MediaLibrarySvg
 import com.syeddev.medialibraryapp.core.utils.svgicons.Smile
@@ -46,12 +45,57 @@ import com.syeddev.medialibraryapp.core.utils.svgicons.Smile
 @Composable
 private fun SignInScreenPreview() {
     MediaLibraryAppTheme {
-        SignInScreen()
+        SignInScreenContent(
+            isLoading = false,
+            userEmail = "",
+            userPassword = "",
+            onEvent = {}
+        )
     }
 }
 
 @Composable
-fun SignInScreen(modifier: Modifier = Modifier) {
+fun SignInScreen(
+    signInViewModel: SignInViewModel = hiltViewModel()
+) {
+    val signInState = signInViewModel.signInState.collectAsStateWithLifecycle()
+    val signInEvent = signInViewModel.event.collectAsStateWithLifecycle(initialValue = SignInUiEvents.Idle)
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(signInEvent) {
+        when(signInEvent.value){
+            SignInUiEvents.Navigate.Home -> {
+
+            }
+            SignInUiEvents.Navigate.SignUp -> {
+
+            }
+            is SignInUiEvents.ShowSnackBar -> {
+
+            }
+            else -> {}
+        }
+    }
+
+    SignInScreenContent(
+        isLoading = signInState.value.isLoading,
+        userEmail = signInState.value.userEmail,
+        userPassword = signInState.value.userPassword,
+        onEvent = signInViewModel::onEvent
+    )
+
+
+}
+
+@Composable
+fun SignInScreenContent(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    userEmail: String,
+    userPassword: String,
+    onEvent: (SignInUiEvents) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,8 +127,10 @@ fun SignInScreen(modifier: Modifier = Modifier) {
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = userEmail,
+            onValueChange = { email->
+                onEvent(SignInUiEvents.Input.EnterUserEmail(email = email))
+            },
             placeholder = {
                 Text(
                     text = "Email"
@@ -98,8 +144,10 @@ fun SignInScreen(modifier: Modifier = Modifier) {
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = userPassword,
+            onValueChange = { password->
+                onEvent(SignInUiEvents.Input.EnterUserPassword(password = password))
+            },
             placeholder = {
                 Text(
                     text = "Password"
@@ -121,7 +169,9 @@ fun SignInScreen(modifier: Modifier = Modifier) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = {},
+            onClick = {
+                onEvent(SignInUiEvents.ButtonClick.SignIn)
+            },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
