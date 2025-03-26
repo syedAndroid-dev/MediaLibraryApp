@@ -3,6 +3,7 @@ package com.syeddev.medialibraryapp.core.manager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.syeddev.medialibraryapp.core.apiutils.Resource
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -33,7 +34,9 @@ class FirebaseAuthManagerImpl @Inject constructor(private val auth: FirebaseAuth
             } else {
                 trySend(Resource.Error(message = task.exception?.message))
             }
+            close()
         }
+        awaitClose()
     }
 
     override suspend fun signIn(
@@ -46,7 +49,9 @@ class FirebaseAuthManagerImpl @Inject constructor(private val auth: FirebaseAuth
             } else {
                 trySend(Resource.Error(message = task.exception?.message))
             }
+            close()
         }
+        awaitClose()
     }
 
     override fun signOut() {

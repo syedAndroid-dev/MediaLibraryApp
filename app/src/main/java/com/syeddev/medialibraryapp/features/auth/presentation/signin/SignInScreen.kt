@@ -1,5 +1,6 @@
 package com.syeddev.medialibraryapp.features.auth.presentation.signin
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.syeddev.medialibraryapp.core.navigation.Destination
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 import com.syeddev.medialibraryapp.core.utils.svgicons.MediaLibrarySvg
 import com.syeddev.medialibraryapp.core.utils.svgicons.Smile
@@ -56,17 +59,20 @@ private fun SignInScreenPreview() {
 
 @Composable
 fun SignInScreen(
-    signInViewModel: SignInViewModel = hiltViewModel()
+    signInViewModel: SignInViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val signInState = signInViewModel.signInState.collectAsStateWithLifecycle()
     val signInEvent = signInViewModel.event.collectAsStateWithLifecycle(initialValue = SignInUiEvents.Idle)
 
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(signInEvent) {
+    LaunchedEffect(signInEvent.value) {
+        Log.e("EventTriggered","Event : ${signInEvent}")
         when(signInEvent.value){
             SignInUiEvents.Navigate.Home -> {
-
+                Log.e("EventTriggered","Navigate to Home...")
+                navController.navigate(route = Destination.MediaGallery)
             }
             SignInUiEvents.Navigate.SignUp -> {
 
@@ -84,8 +90,6 @@ fun SignInScreen(
         userPassword = signInState.value.userPassword,
         onEvent = signInViewModel::onEvent
     )
-
-
 }
 
 @Composable

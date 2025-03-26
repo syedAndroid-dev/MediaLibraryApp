@@ -1,6 +1,9 @@
 package com.syeddev.medialibraryapp.features.auth.presentation.signin
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.syeddev.medialibraryapp.core.apiutils.Resource
 import com.syeddev.medialibraryapp.features.auth.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -8,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +28,7 @@ class SignInViewModel @Inject constructor(
     fun onEvent(signInUiEvents: SignInUiEvents){
         when(signInUiEvents){
             SignInUiEvents.ButtonClick.SignIn -> {
-
+                onSignIn()
             }
 
             is SignInUiEvents.Input.EnterUserEmail -> {
@@ -40,7 +44,22 @@ class SignInViewModel @Inject constructor(
     }
 
     private fun onSignIn(){
+        viewModelScope.launch {
+            authRepository.signIn(email = _signInState.value.userEmail, password = _signInState.value.userPassword).collect { authState ->
 
+                Log.e("AuthState","AuthState : ${authState}")
+                when(authState){
+                    is Resource.Success -> {
+                        Log.e("AuthState","Trigger to Home : ${authState}")
+                        _event.send(SignInUiEvents.Navigate.Home)
+                    }
+                    is Resource.Error -> {
+
+                    }
+                }
+            }
+
+        }
     }
 }
 

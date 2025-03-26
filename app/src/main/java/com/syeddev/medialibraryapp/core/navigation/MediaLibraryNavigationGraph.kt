@@ -24,6 +24,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.syeddev.medialibraryapp.core.base.BaseViewModel
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInScreen
+import com.syeddev.medialibraryapp.features.auth.presentation.signup.SignUpScreen
+import com.syeddev.medialibraryapp.features.mediagallery.presentation.MediaGalleryScreen
+import com.syeddev.medialibraryapp.features.mediagallery.presentation.MediaGalleryScreenContent
+import com.syeddev.medialibraryapp.features.mediagallerydetails.presentation.MediaGalleryDetailScreenContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -36,14 +40,14 @@ fun MediaLibraryNavigationGraph(
     //  val rootNavController = localRootNavController.current
 
     val internetStatus = baseViewModel.isInternetConnected.collectAsStateWithLifecycle()
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "InternetConnectionState : ${internetStatus.value}")
-    }
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize(),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Text(text = "InternetConnectionState : ${internetStatus.value}")
+//    }
 
     val navController = rememberNavController()
 
@@ -52,29 +56,32 @@ fun MediaLibraryNavigationGraph(
             .fillMaxSize(),
         navController = navController,
         startDestination = Destination.SignIn,
-        enterTransition = {
-            fadeIn() + slideInHorizontally()
-        },
-        exitTransition = {
-            fadeOut() + slideOutHorizontally()
-        },
-        popEnterTransition = {
-            fadeIn() + slideInHorizontally()
-        },
-        popExitTransition = {
-            fadeOut() + slideOutHorizontally()
-        }
+        enterTransition = { fadeIn() + slideInHorizontally() },
+        exitTransition = { fadeOut() + slideOutHorizontally() },
+        popEnterTransition = { fadeIn() + slideInHorizontally() },
+        popExitTransition = { fadeOut() + slideOutHorizontally() }
     ) {
-
         composable<Destination.SignIn> {
-            SignInScreen()
+            SignInScreen(
+                navController = navController
+            )
         }
 
+        composable<Destination.SignUp> {
+            SignUpScreen()
+        }
+
+        composable<Destination.MediaGallery> {
+            MediaGalleryScreen()
+        }
+
+        composable<Destination.MediaDetails> {
+            MediaGalleryDetailScreenContent()
+        }
     }
 }
 
-val localRootNavController =
-    compositionLocalOf<NavHostController> { error("NavController not provided") }
+val localRootNavController = compositionLocalOf<NavHostController> { error("NavController not provided") }
 
 //@Composable
 //fun ProvideRootNavController(
