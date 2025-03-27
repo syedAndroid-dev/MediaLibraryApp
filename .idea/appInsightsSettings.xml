@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.syeddev.medialibraryapp" />
+                  <option name="mobileSdkAppId" value="1:967030305868:android:711257bca8633f564230e9" />
+                  <option name="projectId" value="medialibrary-99b58" />
+                  <option name="projectNumber" value="967030305868" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

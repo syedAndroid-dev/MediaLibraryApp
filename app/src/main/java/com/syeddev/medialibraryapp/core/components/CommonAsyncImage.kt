@@ -23,7 +23,7 @@ fun CommonAsyncImage(
     url: String = "",
     alpha: Float = 1f,
     contentScale: ContentScale = ContentScale.FillHeight,
-    mediaType: MediaType
+    mediaType: MediaType = MediaType.IMAGE
 ) {
     val context = LocalActivity.current ?: return
 

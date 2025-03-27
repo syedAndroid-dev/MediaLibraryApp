@@ -139,6 +139,12 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.work.manager)
 
+    //Media3
+    implementation(libs.androidx.media3.exoplayer.v131)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.session)
+
     //test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.syeddev.medialibraryapp.core.base.BaseViewModel
+import com.syeddev.medialibraryapp.core.components.commonmediaplayer.CommonMediaPlayer
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInScreen
 import com.syeddev.medialibraryapp.features.auth.presentation.signup.SignUpScreen
 import com.syeddev.medialibraryapp.features.mediagallery.presentation.MediaGalleryScreen
@@ -72,7 +73,8 @@ fun MediaLibraryNavigationGraph(
         }
 
         composable<Destination.MediaGallery> {
-            MediaGalleryScreen()
+            CommonMediaPlayer()
+           // MediaGalleryScreen()
         }
 
         composable<Destination.MediaDetails> {
