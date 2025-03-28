@@ -1,8 +1,7 @@
-package com.syeddev.medialibraryapp.features.mediagallery.presentation
+package com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagalleryList
 
 import androidx.lifecycle.ViewModel
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInUiEvents
-import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

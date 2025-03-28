@@ -4,14 +4,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -26,9 +22,7 @@ import com.syeddev.medialibraryapp.core.base.BaseViewModel
 import com.syeddev.medialibraryapp.core.components.commonmediaplayer.CommonMediaPlayer
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInScreen
 import com.syeddev.medialibraryapp.features.auth.presentation.signup.SignUpScreen
-import com.syeddev.medialibraryapp.features.mediagallery.presentation.MediaGalleryScreen
-import com.syeddev.medialibraryapp.features.mediagallery.presentation.MediaGalleryScreenContent
-import com.syeddev.medialibraryapp.features.mediagallerydetails.presentation.MediaGalleryDetailScreenContent
+import com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagallerydetails.MediaGalleryDetailScreenContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

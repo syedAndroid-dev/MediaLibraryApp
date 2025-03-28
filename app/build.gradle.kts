@@ -116,6 +116,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.store)
+    implementation(libs.firebase.storage)
     //implementation(libs.firebase.crashlytics)
 
     //DataStore

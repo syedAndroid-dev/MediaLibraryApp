@@ -10,9 +10,9 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface FirebaseAuthManager {
-    suspend fun signUp(name: String, email: String, password: String): Flow<Resource>
+    suspend fun signUp(name: String, email: String, password: String): Flow<Resource<Unit>>
 
-    suspend fun signIn(email: String, password: String): Flow<Resource>
+    suspend fun signIn(email: String, password: String): Flow<Resource<Unit>>
 
     fun signOut()
 
@@ -27,7 +27,7 @@ class FirebaseAuthManagerImpl @Inject constructor(private val auth: FirebaseAuth
         name : String,
         email: String,
         password: String
-    ): Flow<Resource> = callbackFlow {
+    ): Flow<Resource<Unit>> = callbackFlow {
         auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener { task->
             if(task.isSuccessful){
                 trySend(Resource.Success())
@@ -42,7 +42,7 @@ class FirebaseAuthManagerImpl @Inject constructor(private val auth: FirebaseAuth
     override suspend fun signIn(
         email: String,
         password: String
-    ): Flow<Resource> = callbackFlow {
+    ): Flow<Resource<Unit>> = callbackFlow {
         auth.signInWithEmailAndPassword(email,password).addOnCompleteListener { task->
             if(task.isSuccessful){
                 trySend(Resource.Success())
@@ -59,6 +59,5 @@ class FirebaseAuthManagerImpl @Inject constructor(private val auth: FirebaseAuth
     }
 
     override fun getCurrentUser() = auth.currentUser
-
 
 }

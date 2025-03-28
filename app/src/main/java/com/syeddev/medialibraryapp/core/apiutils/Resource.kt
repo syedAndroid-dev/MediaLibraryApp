@@ -1,10 +1,10 @@
 package com.syeddev.medialibraryapp.core.apiutils
 
-sealed class Resource(
-   // val data : T? = null,
+sealed class Resource<T>(
+    val data : T? = null,
     val message : String? = null
 ) {
-    class Success() : Resource()
+    class Success<T>(data: T? = null, message: String? = "") : Resource<T>(data = data)
 
-    class Error(message: String?) : Resource(message)
+    class Error<T>(data: T? = null, message: String? = "") : Resource<T>(message = message)
 }

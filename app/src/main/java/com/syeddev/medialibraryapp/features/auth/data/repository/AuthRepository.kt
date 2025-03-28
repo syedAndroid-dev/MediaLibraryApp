@@ -8,15 +8,14 @@ import javax.inject.Inject
 
 class AuthRepository @Inject constructor(val firebaseAuthManager: FirebaseAuthManager){
 
-    suspend fun signUp(name: String, email: String, password: String): Flow<Resource>{
+    suspend fun signUp(name: String, email: String, password: String): Flow<Resource<Unit>>{
         return firebaseAuthManager.signUp(name,email,password)
     }
 
 
-    suspend fun signIn(email: String, password: String): Flow<Resource>{
+    suspend fun signIn(email: String, password: String): Flow<Resource<Unit>>{
         return firebaseAuthManager.signIn(email,password)
     }
-
 
     fun signOut(){
         firebaseAuthManager.signOut()

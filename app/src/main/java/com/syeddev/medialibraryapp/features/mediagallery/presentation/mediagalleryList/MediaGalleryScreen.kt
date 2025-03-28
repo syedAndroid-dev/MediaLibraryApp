@@ -1,13 +1,9 @@
-package com.syeddev.medialibraryapp.features.mediagallery.presentation
+package com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagalleryList
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,9 +38,8 @@ fun MediaGalleryScreenContent() {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-    ) {
+    ) { scaffoldPadding ->
 
     }
-
 
 }

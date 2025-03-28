@@ -1,4 +1,4 @@
-package com.syeddev.medialibraryapp.features.mediagallerydetails.presentation
+package com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagallerydetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
