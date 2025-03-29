@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -41,7 +42,12 @@ android {
     buildFeatures {
         compose = true
     }
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
+
+
 
 dependencies {
     //AndroidX
@@ -137,6 +143,7 @@ dependencies {
     //Room-db
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
+    implementation(libs.androidx.room.paging)
     ksp(libs.room.compiler)
     implementation(libs.work.manager)
 

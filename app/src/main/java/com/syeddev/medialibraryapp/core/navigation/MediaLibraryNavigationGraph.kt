@@ -22,6 +22,7 @@ import com.syeddev.medialibraryapp.core.base.BaseViewModel
 import com.syeddev.medialibraryapp.core.components.commonmediaplayer.CommonMediaPlayer
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInScreen
 import com.syeddev.medialibraryapp.features.auth.presentation.signup.SignUpScreen
+import com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagalleryList.MediaGalleryScreen
 import com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagallerydetails.MediaGalleryDetailScreenContent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -50,7 +51,7 @@ fun MediaLibraryNavigationGraph(
         modifier = Modifier
             .fillMaxSize(),
         navController = navController,
-        startDestination = Destination.SignIn,
+        startDestination = Destination.MediaGallery,
         enterTransition = { fadeIn() + slideInHorizontally() },
         exitTransition = { fadeOut() + slideOutHorizontally() },
         popEnterTransition = { fadeIn() + slideInHorizontally() },
@@ -67,8 +68,7 @@ fun MediaLibraryNavigationGraph(
         }
 
         composable<Destination.MediaGallery> {
-            CommonMediaPlayer()
-           // MediaGalleryScreen()
+            MediaGalleryScreen()
         }
 
         composable<Destination.MediaDetails> {

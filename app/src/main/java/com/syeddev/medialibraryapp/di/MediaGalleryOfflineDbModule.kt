@@ -19,7 +19,7 @@ object MediaGalleryOfflineDbModule {
     @Provides
     @Singleton
     fun provideMediaGalleryDataBase(@ApplicationContext context : Context): MediaGalleryDatabase{
-        return Room.databaseBuilder(context, MediaGalleryDatabase::class.java, name = MEDIA_GALLERY_DB_NAME).build()
+        return Room.databaseBuilder(context, MediaGalleryDatabase::class.java, name = MEDIA_GALLERY_DB_NAME).fallbackToDestructiveMigration().build()
     }
 
     @Provides

@@ -41,7 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.syeddev.medialibraryapp.core.navigation.Destination
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
-import com.syeddev.medialibraryapp.core.utils.svgicons.Smile
+import com.syeddev.medialibraryapp.core.utils.svgicons.ic_smile
 
 @PreviewLightDark
 @Composable
@@ -110,7 +110,7 @@ fun SignInScreenContent(
             modifier = Modifier.statusBarsPadding()
         )
         Image(
-            painter = rememberVectorPainter(Smile),
+            painter = rememberVectorPainter(ic_smile),
             contentDescription = "Icons",
 
             )

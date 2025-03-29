@@ -44,6 +44,9 @@ fun CommonAsyncImage(
                 MediaType.IMAGE -> R.drawable.ic_image_placeholder
                 MediaType.VIDEO -> R.drawable.ic_video_placeholder
                 MediaType.AUDIO -> R.drawable.ic_music_placeholder
+                else -> {
+                    R.drawable.ic_image_placeholder
+                }
             }
         ),
         placeholder = painterResource(
@@ -51,6 +54,9 @@ fun CommonAsyncImage(
                 MediaType.IMAGE -> R.drawable.ic_image_placeholder
                 MediaType.VIDEO -> R.drawable.ic_video_placeholder
                 MediaType.AUDIO -> R.drawable.ic_music_placeholder
+                else -> {
+                    R.drawable.ic_image_placeholder
+                }
             }
         ),
         contentDescription = "Image",

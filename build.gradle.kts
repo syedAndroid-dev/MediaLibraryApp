@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.library) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.googleServices) version libs.versions.android.gsm apply false
+    alias(libs.plugins.room) version libs.versions.room.db apply false
 }
