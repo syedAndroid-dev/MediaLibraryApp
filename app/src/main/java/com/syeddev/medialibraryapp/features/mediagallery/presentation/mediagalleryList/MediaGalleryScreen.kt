@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,14 +56,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 import com.syeddev.medialibraryapp.core.components.AnimatedLoader
 import com.syeddev.medialibraryapp.core.components.AnimatedPagingLoader
+import com.syeddev.medialibraryapp.core.navigation.Destination
 import com.syeddev.medialibraryapp.core.utils.getMediaDetails
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
@@ -78,7 +82,8 @@ private fun MediaGalleryScreenContentPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaGalleryScreen(
-    mediaGalleryViewModel: MediaGalleryViewModel = hiltViewModel<MediaGalleryViewModel>()
+    mediaGalleryViewModel: MediaGalleryViewModel = hiltViewModel<MediaGalleryViewModel>(),
+    navController: NavHostController
 ) {
     val mediaGalleryUiState by mediaGalleryViewModel.mediaGalleryUiState.collectAsStateWithLifecycle()
 
@@ -89,12 +94,13 @@ fun MediaGalleryScreen(
     val bottomSheetState  = rememberModalBottomSheetState()
     val snackBarState = SnackbarHostState()
 
+    val scope = rememberCoroutineScope()
+
     val context = LocalActivity.current?:return
 
     val mediaLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        Log.e("SelectedUri","Uri : $uri")
         if (uri != null) {
             val uriDetails = context.getMediaDetails(uri = uri)
             mediaGalleryViewModel.onEvent(
@@ -108,9 +114,9 @@ fun MediaGalleryScreen(
                 )
             )
         } else {
-            mediaGalleryViewModel.onEvent(
-                mediaGalleryUiEvents = MediaGalleryUiEvents.ShowSnackBar(message = "Please Select Media To Upload.")
-            )
+            scope.launch {
+                snackBarState.showSnackbar(message = "Please Select Media To Upload.")
+            }
         }
     }
 
@@ -147,7 +153,6 @@ fun MediaGalleryScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarState) },
     ) { scaffoldPadding ->
-        Log.e("MediaGalleryItems","Media : ${mediaGalleryItems.itemCount}")
         AnimatedLoader(isLoading = mediaGalleryUiState.isLoading)
         LazyVerticalStaggeredGrid(
             modifier = Modifier
@@ -166,12 +171,14 @@ fun MediaGalleryScreen(
                     MediaGridItem(
                         height = Random.nextInt(from = 100, until = 300).dp,
                         mediaItem = mediaItem
-                    )
+                    ){ documentId ->
+                        Log.e("PassingDOcumentID","Document ID : ${documentId}")
+                        navController.navigate(route = Destination.MediaDetails(id = documentId))
+                    }
                 }
             }
 
             item {
-                Log.e("LoadState","LoadState : ${mediaGalleryItems.loadState.refresh}")
                 when(mediaGalleryItems.loadState.refresh){
                     is LoadState.Error -> {
                         Text(text = "Error loading more items")
@@ -263,13 +270,16 @@ fun MediaGalleryScreen(
 }
 
 @Composable
-fun MediaGridItem(height: Dp,mediaItem: MediaItemModel) {
+fun MediaGridItem(height: Dp,mediaItem: MediaItemModel,onNavigateToDetailScreen:(String)-> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(height),
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        onClick = {
+            onNavigateToDetailScreen(mediaItem.fireStoreId)
+        }
     ) {
         Box(contentAlignment = Alignment.BottomStart) {
             when (mediaItem.mediaType) {

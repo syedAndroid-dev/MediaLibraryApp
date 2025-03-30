@@ -30,6 +30,8 @@ interface FirebaseStorageManager {
 
     suspend fun deleteMedia(nodeId: String): Resource<Unit>
 
+    suspend fun getMediaDetail(documentId: String): Flow<Resource<MediaItemFireStoreModel>>
+
     suspend fun getAllMediaDetails(): Flow<Resource<List<MediaItemFireStoreModel>>>
 }
 
@@ -54,19 +56,23 @@ class FirebaseStorageManagerImpl @Inject constructor(
             put("downloadUrl", downloadUrl)
         }
         firestore.collection("MediaGallery").add(mediaData).addOnSuccessListener { data ->
-            trySend(Resource.Success(data = MediaItemModel(
-                fireStoreId = data.id,
-                title = fileName,
-                mediaType = mediaType,
-                size = metadata.get("size") as String,
-                uploadedTime = metadata.get("uploadedTime") as Long,
-                isMusic = metadata["isMusic"] as Boolean,
-                musicDetails = metadata["musicDetails"] as String,
-                downloadUrl = downloadUrl
-            ) ))
+            trySend(
+                Resource.Success(
+                    data = MediaItemModel(
+                        fireStoreId = data.id,
+                        title = fileName,
+                        mediaType = mediaType,
+                        size = metadata.get("size") as String,
+                        uploadedTime = metadata.get("uploadedTime") as Long,
+                        isMusic = metadata["isMusic"] as Boolean,
+                        musicDetails = metadata["musicDetails"] as String,
+                        downloadUrl = downloadUrl
+                    )
+                )
+            )
             close()
         }.addOnFailureListener {
-            Log.e("FileUploadError","Unable to upload image : ${it.message}")
+            Log.e("FileUploadError", "Unable to upload image : ${it.message}")
         }
         awaitClose()
     }
@@ -76,27 +82,53 @@ class FirebaseStorageManagerImpl @Inject constructor(
         return Resource.Success()
     }
 
-    override suspend fun getAllMediaDetails(): Flow<Resource<List<MediaItemFireStoreModel>>> = callbackFlow {
-        val query = firestore.collection(Constants.FIRE_STORE_COLLECTION_NAME)
-            .orderBy("uploadedTime", Query.Direction.DESCENDING)
-            .limit(10)
+    override suspend fun getMediaDetail(documentId: String): Flow<Resource<MediaItemFireStoreModel>> =
+        callbackFlow {
+                firestore.collection(Constants.FIRE_STORE_COLLECTION_NAME).document(documentId)
+                    .get()
+                    .addOnSuccessListener { data ->
+                        trySend(Resource.Success(data = data.toObject(MediaItemFireStoreModel::class.java)))
+                        close()
+                    }.addOnFailureListener { exception ->
+                        trySend(Resource.Error(message = exception.message.valueOrDefault()))
+                        close()
+                    }
+            awaitClose()
+        }
 
-        val paginatedQuery = lastVisibleDocument?.let { query.startAfter(it) } ?: query
+    override suspend fun getAllMediaDetails(): Flow<Resource<List<MediaItemFireStoreModel>>> =
+        callbackFlow {
+            val query = firestore.collection(Constants.FIRE_STORE_COLLECTION_NAME)
+                .orderBy("uploadedTime", Query.Direction.DESCENDING)
+                .limit(10)
 
-        paginatedQuery.get()
-            .addOnSuccessListener { result ->
-                val mediaList = result.toObjects(MediaItemFireStoreModel::class.java)
-                if (result.documents.isNotEmpty()) {
-                    lastVisibleDocument = result.documents.last()
+            val paginatedQuery = lastVisibleDocument?.let { query.startAfter(it) } ?: query
+
+            paginatedQuery.get()
+                .addOnSuccessListener { result ->
+                    val mediaList = result.map { document ->
+                        MediaItemFireStoreModel(
+                             title = document.data["title"].toString(),
+                             mediaType = document.data["mediaType"].toString(),
+                             size =document.data["size"].toString(),
+                             uploadedTime = document.data["uploadedTime"] as Long,
+                             isMusic = document.data["isMusic"] as Boolean,
+                             musicDetails= document.data["musicDetails"].toString(),
+                             downloadUrl = document.data["downloadUrl"].toString(),
+                             fireStoreId =  document.id
+                        )
+                    }
+                    if (result.documents.isNotEmpty()) {
+                        lastVisibleDocument = result.documents.last()
+                    }
+                    trySend(Resource.Success(mediaList))
+                    close()
                 }
-                trySend(Resource.Success(mediaList))
-                close()
-            }
-            .addOnFailureListener { exception ->
-                trySend(Resource.Error(message = exception.message))
-                close()
-            }
+                .addOnFailureListener { exception ->
+                    trySend(Resource.Error(message = exception.message))
+                    close()
+                }
 
-        awaitClose()
-    }
+            awaitClose()
+        }
 }

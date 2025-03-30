@@ -10,6 +10,7 @@ import com.syeddev.medialibraryapp.core.apiutils.Resource
 import com.syeddev.medialibraryapp.core.db.MediaGalleryDatabase
 import com.syeddev.medialibraryapp.core.manager.FirebaseStorageManager
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
+import com.syeddev.medialibraryapp.features.mediagallery.data.model.MediaItemFireStoreModel
 import com.syeddev.medialibraryapp.features.mediagallery.data.paginator.GalleryRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -33,6 +34,8 @@ class MediaGalleryRepository @Inject constructor(
         ).flow
     }
 
+    suspend fun getMediaItem(documentId : String): Flow<Resource<MediaItemFireStoreModel>> = firebaseStorageManager.getMediaDetail(documentId)
+
     fun uploadUriToFireStorage(
         title: String?,
         mediaType: String,
@@ -51,4 +54,5 @@ class MediaGalleryRepository @Inject constructor(
             trySend(Resource.Success(data = fireStoreUploadedMedia))
         }
     }
+
 }

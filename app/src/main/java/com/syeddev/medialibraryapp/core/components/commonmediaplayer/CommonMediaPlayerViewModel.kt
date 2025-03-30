@@ -10,11 +10,8 @@ import javax.inject.Inject
 class CommonMediaPlayerViewModel @Inject constructor(
     val player : Player
 ): ViewModel() {
-
-
     init {
         player.prepare()
-        playVideo(uri = "https://www.w3schools.com/tags/mov_bbb.mp4")
     }
 
     fun playVideo(uri: String){

@@ -7,19 +7,16 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.syeddev.medialibraryapp.core.base.BaseViewModel
-import com.syeddev.medialibraryapp.core.components.commonmediaplayer.CommonMediaPlayer
 import com.syeddev.medialibraryapp.features.auth.presentation.signin.SignInScreen
 import com.syeddev.medialibraryapp.features.auth.presentation.signup.SignUpScreen
 import com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagalleryList.MediaGalleryScreen
@@ -32,18 +29,7 @@ import kotlinx.coroutines.withContext
 fun MediaLibraryNavigationGraph(
     baseViewModel: BaseViewModel = hiltViewModel<BaseViewModel>()
 ) {
-    //  ProvideRootNavController {
-    //  val rootNavController = localRootNavController.current
-
     val internetStatus = baseViewModel.isInternetConnected.collectAsStateWithLifecycle()
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize(),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Text(text = "InternetConnectionState : ${internetStatus.value}")
-//    }
 
     val navController = rememberNavController()
 
@@ -64,50 +50,25 @@ fun MediaLibraryNavigationGraph(
         }
 
         composable<Destination.SignUp> {
-            SignUpScreen()
+            SignUpScreen(
+                navController = navController
+            )
         }
 
         composable<Destination.MediaGallery> {
-            MediaGalleryScreen()
+            MediaGalleryScreen(
+                navController = navController
+            )
         }
 
         composable<Destination.MediaDetails> {
-            MediaGalleryDetailScreenContent()
+            MediaGalleryDetailScreenContent(
+                navController = navController
+            )
         }
     }
 }
 
-val localRootNavController = compositionLocalOf<NavHostController> { error("NavController not provided") }
-
-//@Composable
-//fun ProvideRootNavController(
-//    rootNavController: NavHostController = rememberNavController(),
-//    content: @Composable () -> Unit,
-//) {
-//    CompositionLocalProvider(localRootNavController provides rootNavController) {
-//        val navController = localRootNavController.current
-//        ObserveAsEvents(
-//            flow = AlShaqab.appModule.navigator.rootNavigationActions
-//        ) { action ->
-//            when (action) {
-//                is NavigationAction.Navigate -> navController.navigate(
-//                    route = action.destination,
-//                    builder = action.navOptions
-//                )
-//
-//                NavigationAction.NavigateUp -> navController.navigateUp()
-//e
-//                NavigationAction.ClearCurrentParent -> navController.popBackStack(
-//                    route = Destination.Auth.SignIn,
-//                    inclusive = true
-//                )
-//
-//                else -> {}
-//            }
-//        }
-//        content()
-//    }
-//}
 
 @Composable
 fun <T> ObserveAsEvents(

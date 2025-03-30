@@ -1,12 +1,17 @@
 package com.syeddev.medialibraryapp.core.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
 import com.syeddev.medialibraryapp.features.mediagallery.data.model.MediaItemFireStoreModel
+import java.util.Date
 import java.util.Locale
+import java.util.*
 
 
 fun MediaItemFireStoreModel.toMediaEntity(): MediaItemModel {
@@ -84,6 +89,9 @@ fun Double?.valueOrDefault(default: Double = 0.0): Double = this ?: default
 fun Long?.valueOrDefault(default: Long = 0): Long = this ?: default
 
 fun Long?.formatDate(): String{
-    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return sdf.format(this)
+    return  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(this)
+    } else {
+        java.text.SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(this)
+    }
 }

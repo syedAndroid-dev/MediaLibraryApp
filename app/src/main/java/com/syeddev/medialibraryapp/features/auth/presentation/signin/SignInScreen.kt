@@ -22,6 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,33 +70,45 @@ fun SignInScreen(
 ) {
     val signInState = signInViewModel.signInState.collectAsStateWithLifecycle()
     val signInEvent = signInViewModel.event.collectAsStateWithLifecycle(initialValue = SignInUiEvents.Idle)
+    val snackBarState = SnackbarHostState()
 
     LaunchedEffect(signInEvent.value) {
-        Log.e("EventTriggered","Event : ${signInEvent}")
-        when(signInEvent.value){
+        Log.e("EventTriggered", "Event : ${signInEvent}")
+        when (signInEvent.value) {
             SignInUiEvents.Navigate.Home -> {
-                Log.e("EventTriggered","Navigate to Home...")
-                navController.navigate(route = Destination.MediaGallery){
+                Log.e("EventTriggered", "Navigate to Home...")
+                navController.navigate(route = Destination.MediaGallery) {
                     popUpTo(0)
                 }
             }
+
             SignInUiEvents.Navigate.SignUp -> {
 
             }
-            is SignInUiEvents.ShowSnackBar -> {
 
+            is SignInUiEvents.ShowSnackBar -> {
+                snackBarState.showSnackbar(message = (signInEvent.value as SignInUiEvents.ShowSnackBar).message)
             }
+
             else -> {}
         }
     }
 
-    SignInScreenContent(
-        isLoading = signInState.value.isLoading,
-        userEmail = signInState.value.userEmail,
-        userPassword = signInState.value.userPassword,
-        onEvent = signInViewModel::onEvent,
-        isShowError = signInState.value.isShowError
-    )
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackBarState) },
+    ) { scaffoldPadding ->
+        SignInScreenContent(
+            modifier = Modifier.padding(scaffoldPadding),
+            isLoading = signInState.value.isLoading,
+            userEmail = signInState.value.userEmail,
+            userPassword = signInState.value.userPassword,
+            onEvent = signInViewModel::onEvent,
+            isShowError = signInState.value.isShowError
+        )
+    }
+
 }
 
 @Composable
@@ -105,6 +120,7 @@ fun SignInScreenContent(
     isShowError: Boolean,
     onEvent: (SignInUiEvents) -> Unit,
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -138,7 +154,7 @@ fun SignInScreenContent(
             modifier = Modifier
                 .fillMaxWidth(),
             value = userEmail,
-            onValueChange = { email->
+            onValueChange = { email ->
                 onEvent(SignInUiEvents.Input.EnterUserEmail(email = email))
             },
             placeholder = {
@@ -166,7 +182,7 @@ fun SignInScreenContent(
             modifier = Modifier
                 .fillMaxWidth(),
             value = userPassword,
-            onValueChange = { password->
+            onValueChange = { password ->
                 onEvent(SignInUiEvents.Input.EnterUserPassword(password = password))
             },
             placeholder = {
@@ -202,7 +218,7 @@ fun SignInScreenContent(
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = {
-                if(userEmail.isValidEmail() && userPassword.isValidPassword()){
+                if (userEmail.isValidEmail() && userPassword.isValidPassword()) {
                     onEvent(SignInUiEvents.ButtonClick.SignIn)
                 } else {
                     onEvent(SignInUiEvents.ButtonClick.ChangeErrorState)
@@ -269,4 +285,5 @@ fun SignInScreenContent(
             modifier = Modifier.padding(10.dp)
         )
     }
+
 }

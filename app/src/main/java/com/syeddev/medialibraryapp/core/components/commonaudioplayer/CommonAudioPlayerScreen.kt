@@ -1,7 +1,5 @@
 package com.syeddev.medialibraryapp.core.components.commonaudioplayer
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -10,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,10 +17,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -31,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,8 +46,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -52,8 +58,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.syeddev.medialibraryapp.R
 import com.syeddev.medialibraryapp.core.components.CommonAsyncImage
+import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun CommonAudioPlayerScreen(
     modifier: Modifier = Modifier,
@@ -64,41 +71,29 @@ fun CommonAudioPlayerScreen(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxWidth()
+            .padding(10.dp),
     ) {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-        ){
-            IconButton(
-                onClick = {}
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-        }
+        AlbumCoverAnimation(
+            isSongPlaying = isPlaying,
+            musicAlbumImageUrl = musicAlbumImageUrl
+        )
+
 
         Text(
-            text = name,
+            text = "Name : $name",
             fontSize = 24.sp,
             color = Color.Black,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = artist,
+            text = "Artist : $artist",
             fontSize = 12.sp,
             color = Color.Black,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-
-        AlbumCoverAnimation(
-            isSongPlaying = isPlaying,
-            musicAlbumImageUrl = musicAlbumImageUrl
-        )
     }
 }
 
@@ -108,11 +103,11 @@ fun AlbumCoverAnimation(
     isSongPlaying: Boolean = true,
     musicAlbumImageUrl: String
 ) {
-    var currentRotation by rememberSaveable {
+    var currentRotation by remember {
         mutableFloatStateOf(0f)
     }
 
-    val rotation = rememberSaveable {
+    val rotation = remember {
         Animatable(currentRotation)
     }
 
@@ -142,10 +137,28 @@ fun AlbumCoverAnimation(
         }
     }
 
-    AlbumCover(
-        rotationDegrees = rotation.value,
-        musicAlbumImageUrl = musicAlbumImageUrl
-    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AlbumCover(
+            rotationDegrees = rotation.value,
+            musicAlbumImageUrl = musicAlbumImageUrl
+        )
+
+        TrackSlider(
+            value = 0f,
+            onValueChange = {},
+            onValueChangeFinished = {},
+            songDuration = 10f
+        )
+        ControlButton(
+            icon = if(isSongPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+            size = 32.dp
+        ){}
+    }
 }
 
 @Composable
@@ -240,7 +253,7 @@ fun TrackSlider(
 }
 
 @Composable
-fun ControlButton(icon: Int, size: Dp, onClick: () -> Unit) {
+fun ControlButton(icon: ImageVector, size: Dp, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(size)
@@ -252,9 +265,22 @@ fun ControlButton(icon: Int, size: Dp, onClick: () -> Unit) {
     ) {
         Icon(
             modifier = Modifier.size(size / 1.5f),
-            painter = painterResource(id = icon),
+            imageVector =  icon,
             tint = Color.Black,
             contentDescription = null
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun CommonAudioPlayerPreview() {
+    MediaLibraryAppTheme {
+        CommonAudioPlayerScreen(
+            name = "syed",
+            artist = "syed",
+            isPlaying = false,
+            musicAlbumImageUrl = ""
         )
     }
 }

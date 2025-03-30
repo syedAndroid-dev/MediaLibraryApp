@@ -23,18 +23,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 
 @Preview
 @Composable
 private fun SignUpScreenPreview() {
     MediaLibraryAppTheme {
-        SignUpScreen()
+        SignUpScreen(
+            navController = rememberNavController()
+        )
     }
 }
 
 @Composable
-fun SignUpScreen(modifier: Modifier = Modifier) {
+fun SignUpScreen(modifier: Modifier = Modifier, navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()

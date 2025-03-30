@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,11 +20,17 @@ import androidx.media3.ui.PlayerView
 
 @Composable
 fun CommonMediaPlayer(
+    modifier : Modifier = Modifier,
+    mediaUrl : String,
     commonMediaPlayerViewModel: CommonMediaPlayerViewModel = hiltViewModel()
 ) {
-
     var lifecycle by remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        commonMediaPlayerViewModel.playVideo(mediaUrl)
+    }
+
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             lifecycle = event
@@ -36,6 +43,9 @@ fun CommonMediaPlayer(
     }
 
     AndroidView(
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(16 / 9f),
         factory = { context ->
             PlayerView(context).also {
                 it.player = commonMediaPlayerViewModel.player
@@ -53,8 +63,6 @@ fun CommonMediaPlayer(
                 else -> Unit
             }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(16 / 9f)
+
     )
 }
