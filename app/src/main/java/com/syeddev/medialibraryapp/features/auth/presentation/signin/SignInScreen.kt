@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -28,12 +29,18 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -73,7 +80,6 @@ fun SignInScreen(
     val snackBarState = SnackbarHostState()
 
     LaunchedEffect(signInEvent.value) {
-        Log.e("EventTriggered", "Event : ${signInEvent}")
         when (signInEvent.value) {
             SignInUiEvents.Navigate.Home -> {
                 Log.e("EventTriggered", "Navigate to Home...")
@@ -82,9 +88,7 @@ fun SignInScreen(
                 }
             }
 
-            SignInUiEvents.Navigate.SignUp -> {
-
-            }
+            SignInUiEvents.Navigate.SignUp -> {}
 
             is SignInUiEvents.ShowSnackBar -> {
                 snackBarState.showSnackbar(message = (signInEvent.value as SignInUiEvents.ShowSnackBar).message)
@@ -108,7 +112,6 @@ fun SignInScreen(
             isShowError = signInState.value.isShowError
         )
     }
-
 }
 
 @Composable
@@ -120,6 +123,8 @@ fun SignInScreenContent(
     isShowError: Boolean,
     onEvent: (SignInUiEvents) -> Unit,
 ) {
+
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -191,13 +196,9 @@ fun SignInScreenContent(
                 )
             },
             trailingIcon = {
-                IconButton(
-                    onClick = {}
-                ) {
-                    Icon(
-                        Icons.Default.Visibility,
-                        contentDescription = "Visibility"
-                    )
+                val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
                 }
             },
             supportingText = {
@@ -211,7 +212,8 @@ fun SignInScreenContent(
                 }
             },
             shape = RoundedCornerShape(10.dp),
-            isError = isShowError && !userPassword.isValidPassword()
+            isError = isShowError && !userPassword.isValidPassword(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         )
         Spacer(modifier = Modifier.padding(10.dp))
         Button(

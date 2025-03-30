@@ -1,7 +1,9 @@
 package com.syeddev.medialibraryapp.features.mediagallery.data.repository
 
 import android.net.Uri
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -9,6 +11,7 @@ import androidx.room.withTransaction
 import com.syeddev.medialibraryapp.core.apiutils.Resource
 import com.syeddev.medialibraryapp.core.db.MediaGalleryDatabase
 import com.syeddev.medialibraryapp.core.manager.FirebaseStorageManager
+import com.syeddev.medialibraryapp.core.utils.toMediaEntity
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
 import com.syeddev.medialibraryapp.features.mediagallery.data.model.MediaItemFireStoreModel
 import com.syeddev.medialibraryapp.features.mediagallery.data.paginator.GalleryRemoteMediator
@@ -52,6 +55,14 @@ class MediaGalleryRepository @Inject constructor(
         mediaGalleryDatabase.withTransaction {
             mediaGalleryDatabase.mediaItemDao().insertSingleMedia(fireStoreUploadedMedia ?: MediaItemModel())
             trySend(Resource.Success(data = fireStoreUploadedMedia))
+        }
+    }
+
+    suspend fun syncMediaGalleryRefreshedData(){
+        val response = firebaseStorageManager.getAllMediaDetails().first().data?.map { it.toMediaEntity() }
+        mediaGalleryDatabase.withTransaction {
+            mediaGalleryDatabase.mediaItemDao().clearAllMediaItems()
+            mediaGalleryDatabase.mediaItemDao().insertAllMediaItems(response ?: listOf())
         }
     }
 

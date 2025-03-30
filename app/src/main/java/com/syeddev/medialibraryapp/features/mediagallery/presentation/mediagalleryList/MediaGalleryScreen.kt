@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Audiotrack
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.MusicVideo
 import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.VideoFile
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,16 +73,6 @@ import com.syeddev.medialibraryapp.core.utils.getMediaDetails
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-
-
-@PreviewLightDark
-@Composable
-private fun MediaGalleryScreenContentPreview() {
-    MediaLibraryAppTheme {
-        MediaGalleryScreenContent()
-
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,13 +134,20 @@ fun MediaGalleryScreen(
                     .fillMaxWidth()
                     .statusBarsPadding(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Spacer(
+                    modifier = Modifier.size(32.dp)
+                )
+                Text(
+                    text = "Media Gallery ",
+                    fontWeight = FontWeight.SemiBold
+                )
                 IconButton(
                     onClick = { isMediaUploadBottomSheetVisible = true }
                 ) {
                     Icon(
-                        Icons.Default.Add,
+                        Icons.Default.CloudUpload,
                         contentDescription = "IconAdd"
                     )
                 }
@@ -184,7 +186,9 @@ fun MediaGalleryScreen(
                         Text(text = "Error loading more items")
                     }
                     LoadState.Loading -> {
-                        AnimatedPagingLoader()
+                        AnimatedPagingLoader(
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                     is LoadState.NotLoading -> {}
                 }
@@ -205,9 +209,9 @@ fun MediaGalleryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
-                    text = "Select Media Type",
+                    text = "Select Media Type To Upload.",
                     textAlign = TextAlign.Center,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Row(
@@ -224,6 +228,10 @@ fun MediaGalleryScreen(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(10.dp)
+                        )
+                        Icon(
+                            Icons.Default.Image,
+                            contentDescription = "Image"
                         )
                     }
                 }
@@ -243,26 +251,34 @@ fun MediaGalleryScreen(
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(10.dp)
                         )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextButton(
-                        onClick = {
-                            mediaLauncher.launch("audio/*")
-                            isMediaUploadBottomSheetVisible = false
-                        }
-                    ) {
-                        Text(
-                            text = "Audio",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(10.dp)
+                        Icon(
+                            Icons.Default.VideoFile,
+                            contentDescription = "Video"
                         )
                     }
                 }
+
+//                Row(
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    TextButton(
+//                        onClick = {
+//                            mediaLauncher.launch("audio/*")
+//                            isMediaUploadBottomSheetVisible = false
+//                        }
+//                    ) {
+//                        Text(
+//                            text = "Audio",
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.SemiBold,
+//                            modifier = Modifier.padding(10.dp)
+//                        )
+//                        Icon(
+//                            Icons.Default.MusicVideo,
+//                            contentDescription = "Music"
+//                        )
+//                    }
+//                }
 
             }
         }
@@ -334,10 +350,4 @@ fun MediaGridItem(height: Dp,mediaItem: MediaItemModel,onNavigateToDetailScreen:
             )
         }
     }
-}
-
-@Composable
-fun MediaGalleryScreenContent() {
-
-
 }

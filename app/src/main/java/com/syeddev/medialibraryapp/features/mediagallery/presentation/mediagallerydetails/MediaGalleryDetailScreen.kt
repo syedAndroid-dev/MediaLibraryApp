@@ -58,15 +58,9 @@ fun MediaGalleryDetailScreenContent(
     mediaGalleryDetailViewModel: MediaGalleryDetailViewModel = hiltViewModel<MediaGalleryDetailViewModel>(),
     navController: NavHostController
 ) {
-    val mediaGalleryDetailUiState =
-        mediaGalleryDetailViewModel.mediaGalleryDetailUiState.collectAsStateWithLifecycle()
-    val mediaGalleryEvent =
-        mediaGalleryDetailViewModel.event.collectAsStateWithLifecycle(MediaGalleryDetailUiEvents.Idle)
+    val mediaGalleryDetailUiState = mediaGalleryDetailViewModel.mediaGalleryDetailUiState.collectAsStateWithLifecycle()
+    val mediaGalleryEvent = mediaGalleryDetailViewModel.event.collectAsStateWithLifecycle(MediaGalleryDetailUiEvents.Idle)
 
-
-    LaunchedEffect(key1 = mediaGalleryEvent.value) {
-
-    }
     MediaGalleryDetailScreen(
         isLoading = mediaGalleryDetailUiState.value.isLoading,
         documentTitle = mediaGalleryDetailUiState.value.documentTitle,
@@ -250,8 +244,6 @@ fun MediaGalleryDetailScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-
-
             }
 
         }

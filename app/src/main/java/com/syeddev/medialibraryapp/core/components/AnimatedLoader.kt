@@ -25,7 +25,8 @@ import com.syeddev.medialibraryapp.R
 @Composable
 fun AnimatedLoader(
     modifier: Modifier = Modifier,
-    isLoading: Boolean
+    isLoading: Boolean,
+    loaderTitle: String = "Loading.."
 ) {
     val preLoaderLottieAnimation by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loading_animation))
 
@@ -50,7 +51,7 @@ fun AnimatedLoader(
                     contentScale = ContentScale.Fit,
                 )
                 Text(
-                    text = "Loading..",
+                    text = loaderTitle,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.White
