@@ -51,7 +51,7 @@ fun MediaLibraryNavigationGraph(
         modifier = Modifier
             .fillMaxSize(),
         navController = navController,
-        startDestination = Destination.MediaGallery,
+        startDestination = baseViewModel.getStartDestination(),
         enterTransition = { fadeIn() + slideInHorizontally() },
         exitTransition = { fadeOut() + slideOutHorizontally() },
         popEnterTransition = { fadeIn() + slideInHorizontally() },

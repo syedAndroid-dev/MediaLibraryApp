@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syeddev.medialibraryapp.core.apiutils.Resource
+import com.syeddev.medialibraryapp.core.utils.valueOrDefault
 import com.syeddev.medialibraryapp.features.auth.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -39,22 +40,30 @@ class SignInViewModel @Inject constructor(
                 _signInState.update { it.copy(userPassword = signInUiEvents.password) }
             }
 
+            SignInUiEvents.ButtonClick.ChangeErrorState -> {
+                _signInState.update { it.copy(isShowError = !it.isShowError) }
+            }
+
             else -> { }
         }
     }
 
     private fun onSignIn(){
         viewModelScope.launch {
+            _signInState.update { it.copy(isLoading = true) }
             authRepository.signIn(email = _signInState.value.userEmail, password = _signInState.value.userPassword).collect { authState ->
 
                 Log.e("AuthState","AuthState : ${authState}")
                 when(authState){
                     is Resource.Success -> {
+                        _signInState.update { it.copy(isLoading = false) }
                         Log.e("AuthState","Trigger to Home : ${authState}")
                         _event.send(SignInUiEvents.Navigate.Home)
                     }
                     is Resource.Error -> {
-
+                        _signInState.update { it.copy(isLoading = false) }
+                        Log.e("AuthState","Trigger to Home : ${authState}")
+                        _event.send(SignInUiEvents.ShowSnackBar(message = authState.message.valueOrDefault()))
                     }
                 }
             }
@@ -67,6 +76,7 @@ data class SignInUiState(
     val isLoading : Boolean = false,
     val userEmail : String = "",
     val userPassword : String = "",
+    val isShowError: Boolean = false
 )
 
 sealed class SignInUiEvents{
@@ -79,6 +89,7 @@ sealed class SignInUiEvents{
 
     sealed class ButtonClick{
         data object SignIn : SignInUiEvents()
+        data object ChangeErrorState : SignInUiEvents()
     }
 
     sealed class Navigate{

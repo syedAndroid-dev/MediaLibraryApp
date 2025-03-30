@@ -5,8 +5,9 @@ data class MediaItemFireStoreModel(
     val title: String = "",
     val mediaType: String = "",
     val size: String = "",
-    val uploadedTime: String = "",
+    val uploadedTime: Long = 0L,
     val isMusic: Boolean = false,
     val musicDetails : String = "",
-    val downloadUrl: String = ""
+    val downloadUrl: String = "",
+    val fireStoreId: String = ""
 )

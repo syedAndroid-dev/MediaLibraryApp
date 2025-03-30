@@ -12,11 +12,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,7 +25,6 @@ import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,7 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,9 +59,11 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
+import com.syeddev.medialibraryapp.core.components.AnimatedLoader
+import com.syeddev.medialibraryapp.core.components.AnimatedPagingLoader
 import com.syeddev.medialibraryapp.core.utils.getMediaDetails
-import com.syeddev.medialibraryapp.core.utils.getMediaType
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
+import kotlin.random.Random
 
 
 @PreviewLightDark
@@ -77,10 +80,12 @@ private fun MediaGalleryScreenContentPreview() {
 fun MediaGalleryScreen(
     mediaGalleryViewModel: MediaGalleryViewModel = hiltViewModel<MediaGalleryViewModel>()
 ) {
-    val mediaGalleryItems = mediaGalleryViewModel.mediaGalleryItems.collectAsLazyPagingItems()
-    val mediaGalleryEvents = mediaGalleryViewModel.event.collectAsStateWithLifecycle(initialValue = MediaGalleryUiEvents.Idle)
+    val mediaGalleryUiState by mediaGalleryViewModel.mediaGalleryUiState.collectAsStateWithLifecycle()
 
-    var isMediaUploadBottomSheetVisible by remember { mutableStateOf(false) }
+    val mediaGalleryItems = mediaGalleryViewModel.mediaGalleryItems.collectAsLazyPagingItems()
+    val mediaGalleryEvents by mediaGalleryViewModel.event.collectAsStateWithLifecycle(initialValue = MediaGalleryUiEvents.Idle)
+
+    var isMediaUploadBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState  = rememberModalBottomSheetState()
     val snackBarState = SnackbarHostState()
 
@@ -95,10 +100,11 @@ fun MediaGalleryScreen(
             mediaGalleryViewModel.onEvent(
                 mediaGalleryUiEvents = MediaGalleryUiEvents.ButtonClick.OnUploadMedia(
                     mediaUri = uri,
-                    mediaType = uri.getMediaType(),
+                    mediaType = uriDetails.third ?: "",
                     title = uriDetails.first,
                     size = uriDetails.second,
-                    uploadTime = System.currentTimeMillis()
+                    isMusic = uriDetails.third == "audio",
+                    musicDetails = ""
                 )
             )
         } else {
@@ -108,10 +114,10 @@ fun MediaGalleryScreen(
         }
     }
 
-    LaunchedEffect(key1 = mediaGalleryEvents.value) {
-        when(mediaGalleryEvents.value){
+    LaunchedEffect(mediaGalleryEvents) {
+        when(mediaGalleryEvents){
             is MediaGalleryUiEvents.ShowSnackBar -> {
-                snackBarState.showSnackbar(message = (mediaGalleryEvents.value as MediaGalleryUiEvents.ShowSnackBar).message)
+                snackBarState.showSnackbar(message = (mediaGalleryEvents as MediaGalleryUiEvents.ShowSnackBar).message)
             }
 
             else -> {}
@@ -130,9 +136,7 @@ fun MediaGalleryScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(
-                    onClick = {
-                        isMediaUploadBottomSheetVisible = true
-                    }
+                    onClick = { isMediaUploadBottomSheetVisible = true }
                 ) {
                     Icon(
                         Icons.Default.Add,
@@ -144,36 +148,38 @@ fun MediaGalleryScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarState) },
     ) { scaffoldPadding ->
         Log.e("MediaGalleryItems","Media : ${mediaGalleryItems.itemCount}")
-        LazyVerticalGrid(
+        AnimatedLoader(isLoading = mediaGalleryUiState.isLoading)
+        LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding),
-            columns = GridCells.Fixed(2),
+            columns = StaggeredGridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalItemSpacing = 16.dp
         ) {
             items(
                 count = mediaGalleryItems.itemCount,
                 key = { index -> mediaGalleryItems[index]?.id ?: index }
             ) { index ->
                 mediaGalleryItems[index]?.let { mediaItem ->
-                    MediaGridItem(mediaItem = mediaItem)
+                    MediaGridItem(
+                        height = Random.nextInt(from = 100, until = 300).dp,
+                        mediaItem = mediaItem
+                    )
                 }
             }
 
             item {
-                Log.e("LoadState","Load State : ${mediaGalleryItems.loadState.append}")
-                when(mediaGalleryItems.loadState.append){
+                Log.e("LoadState","LoadState : ${mediaGalleryItems.loadState.refresh}")
+                when(mediaGalleryItems.loadState.refresh){
                     is LoadState.Error -> {
                         Text(text = "Error loading more items")
                     }
                     LoadState.Loading -> {
-                        CircularProgressIndicator()
+                        AnimatedPagingLoader()
                     }
-                    is LoadState.NotLoading -> {
-                        Text(text = "Not loading more items")
-                    }
+                    is LoadState.NotLoading -> {}
                 }
             }
         }
@@ -182,9 +188,7 @@ fun MediaGalleryScreen(
     if (isMediaUploadBottomSheetVisible){
         ModalBottomSheet(
             sheetState = bottomSheetState,
-            onDismissRequest = {
-                isMediaUploadBottomSheetVisible = false
-            }
+            onDismissRequest = { isMediaUploadBottomSheetVisible = false }
         ) {
             Column(
                 modifier = Modifier
@@ -259,10 +263,11 @@ fun MediaGalleryScreen(
 }
 
 @Composable
-fun MediaGridItem(mediaItem: MediaItemModel) {
+fun MediaGridItem(height: Dp,mediaItem: MediaItemModel) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(height),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

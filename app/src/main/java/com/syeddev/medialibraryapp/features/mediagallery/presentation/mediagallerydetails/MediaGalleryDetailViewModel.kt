@@ -3,6 +3,7 @@ package com.syeddev.medialibraryapp.features.mediagallery.presentation.mediagall
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.syeddev.medialibraryapp.core.navigation.Destination
 import com.syeddev.medialibraryapp.features.mediagallery.data.repository.MediaGalleryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch

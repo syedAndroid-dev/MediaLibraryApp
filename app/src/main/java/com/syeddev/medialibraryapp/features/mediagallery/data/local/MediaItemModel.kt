@@ -6,12 +6,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "mediaItems")
 data class MediaItemModel(
-    @PrimaryKey val id: Long,
-    val title: String,
-    val mediaType: String,
-    val size: String,
-    val uploadedTime: String,
-    val isMusic: Boolean,
-    val musicDetails : String,
-    val downloadUrl: String
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val title: String = "",
+    val mediaType: String = "",
+    val size: String = "",
+    val uploadedTime: Long = 0L,
+    val isMusic: Boolean = false,
+    val musicDetails : String = "",
+    val downloadUrl: String = "",
+    val fireStoreId : String = ""
 )

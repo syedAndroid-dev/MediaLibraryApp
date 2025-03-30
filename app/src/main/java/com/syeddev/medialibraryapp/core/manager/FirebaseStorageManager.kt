@@ -8,6 +8,8 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.syeddev.medialibraryapp.core.apiutils.Resource
 import com.syeddev.medialibraryapp.core.utils.Constants
+import com.syeddev.medialibraryapp.core.utils.formatFileSize
+import com.syeddev.medialibraryapp.core.utils.valueOrDefault
 import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
 import com.syeddev.medialibraryapp.features.mediagallery.data.model.MediaItemFireStoreModel
 import kotlinx.coroutines.channels.awaitClose
@@ -24,11 +26,11 @@ interface FirebaseStorageManager {
         mediaUri: Uri,
         mediaType: String,
         metadata: Map<String, Any>
-    ): Flow<Resource<String>>
+    ): Flow<Resource<MediaItemModel>>
 
     suspend fun deleteMedia(nodeId: String): Resource<Unit>
 
-    suspend fun getAllMediaDetails(): Resource<List<MediaItemFireStoreModel>>
+    suspend fun getAllMediaDetails(): Flow<Resource<List<MediaItemFireStoreModel>>>
 }
 
 class FirebaseStorageManagerImpl @Inject constructor(
@@ -43,23 +45,29 @@ class FirebaseStorageManagerImpl @Inject constructor(
         mediaUri: Uri,
         mediaType: String,
         metadata: Map<String, Any>
-    ): Flow<Resource<String>> = callbackFlow {
+    ): Flow<Resource<MediaItemModel>> = callbackFlow {
         val storageRefName = firebaseStorage.reference.child("${mediaType}/${fileName}")
         val fileUploadTask = storageRefName.putFile(mediaUri).await()
         val downloadUrl = storageRefName.downloadUrl.await().toString()
 
         val mediaData = metadata.toMutableMap().apply {
             put("downloadUrl", downloadUrl)
-            put("fileType", mediaType)
-            put("createdAt", System.currentTimeMillis())
         }
-
-        firestore.collection("media").add(mediaData).addOnSuccessListener { data ->
-            trySend(Resource.Success(data = data.id))
+        firestore.collection("MediaGallery").add(mediaData).addOnSuccessListener { data ->
+            trySend(Resource.Success(data = MediaItemModel(
+                fireStoreId = data.id,
+                title = fileName,
+                mediaType = mediaType,
+                size = metadata.get("size") as String,
+                uploadedTime = metadata.get("uploadedTime") as Long,
+                isMusic = metadata["isMusic"] as Boolean,
+                musicDetails = metadata["musicDetails"] as String,
+                downloadUrl = downloadUrl
+            ) ))
             close()
+        }.addOnFailureListener {
+            Log.e("FileUploadError","Unable to upload image : ${it.message}")
         }
-
-
         awaitClose()
     }
 
@@ -68,16 +76,27 @@ class FirebaseStorageManagerImpl @Inject constructor(
         return Resource.Success()
     }
 
-    override suspend fun getAllMediaDetails(): Resource<List<MediaItemFireStoreModel>> {
-        Log.e("Firestore API", "Fetching new page from Firestore...")
+    override suspend fun getAllMediaDetails(): Flow<Resource<List<MediaItemFireStoreModel>>> = callbackFlow {
         val query = firestore.collection(Constants.FIRE_STORE_COLLECTION_NAME)
             .orderBy("uploadedTime", Query.Direction.DESCENDING)
             .limit(10)
 
-        val snapshot = query.get().await()
+        val paginatedQuery = lastVisibleDocument?.let { query.startAfter(it) } ?: query
 
-        val mediaItems = snapshot.toObjects(MediaItemFireStoreModel::class.java)
+        paginatedQuery.get()
+            .addOnSuccessListener { result ->
+                val mediaList = result.toObjects(MediaItemFireStoreModel::class.java)
+                if (result.documents.isNotEmpty()) {
+                    lastVisibleDocument = result.documents.last()
+                }
+                trySend(Resource.Success(mediaList))
+                close()
+            }
+            .addOnFailureListener { exception ->
+                trySend(Resource.Error(message = exception.message))
+                close()
+            }
 
-        return Resource.Success(data = mediaItems)
+        awaitClose()
     }
 }

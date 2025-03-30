@@ -1,6 +1,7 @@
 package com.syeddev.medialibraryapp.features.auth.presentation.signin
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +25,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -41,6 +41,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.syeddev.medialibraryapp.core.navigation.Destination
 import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
+import com.syeddev.medialibraryapp.core.components.AnimatedLoader
+import com.syeddev.medialibraryapp.core.utils.isValidEmail
+import com.syeddev.medialibraryapp.core.utils.isValidPassword
 import com.syeddev.medialibraryapp.core.utils.svgicons.ic_smile
 
 @PreviewLightDark
@@ -51,7 +54,8 @@ private fun SignInScreenPreview() {
             isLoading = false,
             userEmail = "",
             userPassword = "",
-            onEvent = {}
+            onEvent = {},
+            isShowError = false
         )
     }
 }
@@ -64,14 +68,14 @@ fun SignInScreen(
     val signInState = signInViewModel.signInState.collectAsStateWithLifecycle()
     val signInEvent = signInViewModel.event.collectAsStateWithLifecycle(initialValue = SignInUiEvents.Idle)
 
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(signInEvent.value) {
         Log.e("EventTriggered","Event : ${signInEvent}")
         when(signInEvent.value){
             SignInUiEvents.Navigate.Home -> {
                 Log.e("EventTriggered","Navigate to Home...")
-                navController.navigate(route = Destination.MediaGallery)
+                navController.navigate(route = Destination.MediaGallery){
+                    popUpTo(0)
+                }
             }
             SignInUiEvents.Navigate.SignUp -> {
 
@@ -87,7 +91,8 @@ fun SignInScreen(
         isLoading = signInState.value.isLoading,
         userEmail = signInState.value.userEmail,
         userPassword = signInState.value.userPassword,
-        onEvent = signInViewModel::onEvent
+        onEvent = signInViewModel::onEvent,
+        isShowError = signInState.value.isShowError
     )
 }
 
@@ -97,7 +102,8 @@ fun SignInScreenContent(
     isLoading: Boolean,
     userEmail: String,
     userPassword: String,
-    onEvent: (SignInUiEvents) -> Unit
+    isShowError: Boolean,
+    onEvent: (SignInUiEvents) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -106,6 +112,7 @@ fun SignInScreenContent(
             .padding(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        AnimatedLoader(isLoading = isLoading)
         Spacer(
             modifier = Modifier.statusBarsPadding()
         )
@@ -139,7 +146,18 @@ fun SignInScreenContent(
                     text = "Email"
                 )
             },
-            shape = RoundedCornerShape(10.dp)
+            supportingText = {
+                AnimatedVisibility(
+                    visible = isShowError && !userEmail.isValidEmail()
+                ) {
+                    Text(
+                        text = "Please Enter Valid Email.",
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
+            },
+            shape = RoundedCornerShape(10.dp),
+            isError = isShowError && !userEmail.isValidEmail()
         )
         Spacer(
             modifier = Modifier.padding(10.dp)
@@ -166,14 +184,30 @@ fun SignInScreenContent(
                     )
                 }
             },
-            shape = RoundedCornerShape(10.dp)
+            supportingText = {
+                AnimatedVisibility(
+                    visible = isShowError && !userPassword.isValidPassword()
+                ) {
+                    Text(
+                        text = "Please Enter Valid Password.",
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
+            },
+            shape = RoundedCornerShape(10.dp),
+            isError = isShowError && !userPassword.isValidPassword()
         )
         Spacer(modifier = Modifier.padding(10.dp))
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = {
-                onEvent(SignInUiEvents.ButtonClick.SignIn)
+                if(userEmail.isValidEmail() && userPassword.isValidPassword()){
+                    onEvent(SignInUiEvents.ButtonClick.SignIn)
+                } else {
+                    onEvent(SignInUiEvents.ButtonClick.ChangeErrorState)
+                }
+
             },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
