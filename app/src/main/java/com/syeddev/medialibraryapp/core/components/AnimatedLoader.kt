@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -62,7 +63,10 @@ fun AnimatedLoader(
 }
 
 @Composable
-fun AnimatedPagingLoader(modifier: Modifier = Modifier) {
+fun AnimatedPagingLoader(
+    modifier: Modifier = Modifier,
+    size : Dp = 120.dp
+) {
     val preLoaderLottieAnimation by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loading_animation))
 
     val preLoaderProgress by animateLottieCompositionAsState(
@@ -74,7 +78,7 @@ fun AnimatedPagingLoader(modifier: Modifier = Modifier) {
     LottieAnimation(
         composition = preLoaderLottieAnimation,
         progress = preLoaderProgress,
-        modifier = modifier.size(120.dp),
+        modifier = modifier.size(size),
         contentScale = ContentScale.Fit,
     )
 }

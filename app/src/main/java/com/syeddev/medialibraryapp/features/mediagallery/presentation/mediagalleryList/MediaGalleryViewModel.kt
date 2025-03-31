@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.syeddev.medialibraryapp.core.apiutils.Resource
+import com.syeddev.medialibraryapp.core.manager.InternetConnectivityManager
 import com.syeddev.medialibraryapp.core.utils.formatFileSize
 import com.syeddev.medialibraryapp.core.utils.valueOrDefault
 import com.syeddev.medialibraryapp.features.mediagallery.data.repository.MediaGalleryRepository
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MediaGalleryViewModel @Inject constructor(
-    val mediaGalleryRepository: MediaGalleryRepository
+    private val mediaGalleryRepository: MediaGalleryRepository,
+    private val networkConnectivityManager: InternetConnectivityManager
 ) : ViewModel() {
 
     private val _mediaGalleryUiState = MutableStateFlow(MediaGalleryUiState())
@@ -30,6 +32,20 @@ class MediaGalleryViewModel @Inject constructor(
 
     private val _event: Channel<MediaGalleryUiEvents> = Channel()
     val event = _event.receiveAsFlow()
+
+    init {
+        observeNetwork()
+    }
+
+    private fun observeNetwork(){
+        viewModelScope.launch {
+            networkConnectivityManager.isInternetConnected.collect{ isOnline ->
+                if (isOnline) {
+                    _mediaGalleryUiState.update { it.copy(isSyncing = !it.isSyncing) }
+                }
+            }
+        }
+    }
 
     fun onEvent(mediaGalleryUiEvents: MediaGalleryUiEvents) {
         when (mediaGalleryUiEvents) {
@@ -92,7 +108,8 @@ class MediaGalleryViewModel @Inject constructor(
 }
 
 data class MediaGalleryUiState(
-    val isLoading : Boolean = false
+    val isLoading : Boolean = false,
+    val isSyncing : Boolean = false
 )
 
 sealed class MediaGalleryUiEvents {

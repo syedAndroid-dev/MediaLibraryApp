@@ -2,6 +2,7 @@ package com.syeddev.medialibraryapp.di
 
 import com.syeddev.medialibraryapp.core.db.MediaGalleryDatabase
 import com.syeddev.medialibraryapp.core.manager.FirebaseStorageManager
+import com.syeddev.medialibraryapp.core.manager.InternetConnectivityManager
 import com.syeddev.medialibraryapp.features.mediagallery.data.repository.MediaGalleryRepository
 import dagger.Module
 import dagger.Provides
@@ -15,7 +16,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRepositoryModule(firebaseStorageManager: FirebaseStorageManager,mediaGalleryDatabase: MediaGalleryDatabase): MediaGalleryRepository{
-        return MediaGalleryRepository(firebaseStorageManager,mediaGalleryDatabase)
+    fun provideRepositoryModule(firebaseStorageManager: FirebaseStorageManager,mediaGalleryDatabase: MediaGalleryDatabase,networkConnectivityManager: InternetConnectivityManager): MediaGalleryRepository{
+        return MediaGalleryRepository(firebaseStorageManager,mediaGalleryDatabase,networkConnectivityManager)
     }
 }

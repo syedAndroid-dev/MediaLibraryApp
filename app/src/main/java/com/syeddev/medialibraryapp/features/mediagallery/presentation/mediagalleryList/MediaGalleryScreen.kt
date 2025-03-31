@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,11 +22,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.MusicVideo
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.VideoFile
 import androidx.compose.material3.Card
@@ -55,7 +54,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,7 +63,6 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
-import com.syeddev.medialibraryapp.core.theme.MediaLibraryAppTheme
 import com.syeddev.medialibraryapp.core.components.AnimatedLoader
 import com.syeddev.medialibraryapp.core.components.AnimatedPagingLoader
 import com.syeddev.medialibraryapp.core.navigation.Destination
@@ -129,27 +126,59 @@ fun MediaGalleryScreen(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Spacer(
-                    modifier = Modifier.size(32.dp)
-                )
-                Text(
-                    text = "Media Gallery ",
-                    fontWeight = FontWeight.SemiBold
-                )
-                IconButton(
-                    onClick = { isMediaUploadBottomSheetVisible = true }
+            Column (
+                modifier = Modifier.fillMaxWidth()
+            ){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        Icons.Default.CloudUpload,
-                        contentDescription = "IconAdd"
+                    Spacer(
+                        modifier = Modifier.size(32.dp)
                     )
+                    Text(
+                        text = "Media Gallery ",
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    IconButton(
+                        onClick = { isMediaUploadBottomSheetVisible = true }
+                    ) {
+                        Icon(
+                            Icons.Default.CloudUpload,
+                            contentDescription = "IconAdd"
+                        )
+                    }
+                }
+                AnimatedVisibility(
+                    visible = mediaGalleryUiState.isSyncing,
+                ) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.LightGray),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Syncing Data..",
+                                color = Color.White
+                            )
+                            Spacer(
+                                modifier = Modifier.padding(4.dp)
+                            )
+                            AnimatedPagingLoader(
+                                modifier = Modifier,
+                                size = 40.dp
+                            )
+                        }
+                    }
                 }
             }
         },
