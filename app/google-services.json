@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "967030305868",
+    "project_id": "medialibrary-99b58",
+    "storage_bucket": "medialibrary-99b58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967030305868:android:711257bca8633f564230e9",
+        "android_client_info": {
+          "package_name": "com.syeddev.medialibraryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZedyh64arGgePolPmhT1wpU4J2irHFPg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
