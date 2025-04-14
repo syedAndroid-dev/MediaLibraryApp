@@ -93,6 +93,8 @@ dependencies {
     //Dagger-Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.dagger.hilt.navigation)
+
+    implementation(libs.androidx.hilt.work)
     debugImplementation(libs.ui.test.manifest)
     ksp(libs.dagger.hilt.compiler)
     ksp(libs.dagger.hilt.androidx)

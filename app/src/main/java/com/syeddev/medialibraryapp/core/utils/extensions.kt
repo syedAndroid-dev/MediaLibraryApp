@@ -6,27 +6,23 @@ import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
-import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
-import com.syeddev.medialibraryapp.features.mediagallery.data.model.MediaItemFireStoreModel
-import java.util.Date
 import java.util.Locale
 import java.util.*
 
 
-fun MediaItemFireStoreModel.toMediaEntity(): MediaItemModel {
-    return MediaItemModel(
-        id = id,
-        title = title,
-        mediaType = mediaType,
-        size = size,
-        uploadedTime = uploadedTime,
-        isMusic = isMusic,
-        musicDetails = musicDetails,
-        downloadUrl = downloadUrl,
-        fireStoreId = fireStoreId
-    )
-}
+//fun MediaItemFireStoreModel.toMediaEntity(): MediaItemModel {
+//    return MediaItemModel(
+//        id = id,
+//        title = title,
+//        mediaType = mediaType,
+//        size = size,
+//        uploadedTime = uploadedTime,
+//        isMusic = isMusic,
+//        musicDetails = musicDetails,
+//        downloadUrl = downloadUrl,
+//        fireStoreId = fireStoreId
+//    )
+//}
 
 fun formatFileSize(sizeInBytes: Long): String {
     val units = listOf("B", "KB", "MB", "GB")

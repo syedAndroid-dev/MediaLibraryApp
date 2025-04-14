@@ -4,6 +4,7 @@ firebaseBom = "33.11.0"
 
 #PlugInVersion
 agp = "8.8.2"
+hiltWork = "1.2.0"
 library = "8.3.2"
 kotlin = "2.0.21"
 android-hilt = "2.52"
@@ -74,6 +75,7 @@ test-rule = "1.6.1"
 [libraries]
 
 #Kotlin
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 androidx-media3-common = { module = "androidx.media3:media3-common", version.ref = "media3Exoplayer" }
 androidx-media3-exoplayer-v131 = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3Exoplayer" }

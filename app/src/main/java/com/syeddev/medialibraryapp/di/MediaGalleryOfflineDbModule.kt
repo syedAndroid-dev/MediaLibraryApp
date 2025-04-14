@@ -3,8 +3,11 @@ package com.syeddev.medialibraryapp.di
 import android.content.Context
 import androidx.room.Room
 import com.syeddev.medialibraryapp.core.db.MediaGalleryDatabase
+import com.syeddev.medialibraryapp.core.manager.FirebaseStorageManager
 import com.syeddev.medialibraryapp.core.utils.Constants.MEDIA_GALLERY_DB_NAME
-import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemDao
+import com.syeddev.medialibraryapp.featureoptimized.mediagallery.data.local.MediaGalleryDao
+import com.syeddev.medialibraryapp.featureoptimized.mediagallery.data.repository.MediaGalleryRepositoryImpl
+import com.syeddev.medialibraryapp.featureoptimized.mediagallery.domain.repository.MediaGalleryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +26,13 @@ object MediaGalleryOfflineDbModule {
     }
 
     @Provides
-    fun provideMediaItemDao(database: MediaGalleryDatabase): MediaItemDao{
+    fun provideMediaItemDao(database: MediaGalleryDatabase): MediaGalleryDao{
         return database.mediaItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaGalleryRepository(mediaGalleryDatabase: MediaGalleryDatabase,mediaGalleryFirebaseStorageManager: FirebaseStorageManager): MediaGalleryRepository{
+        return MediaGalleryRepositoryImpl(mediaGalleryDatabase,mediaGalleryFirebaseStorageManager)
     }
 }

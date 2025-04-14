@@ -2,10 +2,10 @@ package com.syeddev.medialibraryapp.core.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemDao
-import com.syeddev.medialibraryapp.features.mediagallery.data.local.MediaItemModel
+import com.syeddev.medialibraryapp.featureoptimized.mediagallery.data.local.MediaGalleryDao
+import com.syeddev.medialibraryapp.featureoptimized.mediagallery.data.local.MediaGalleryEntity
 
-@Database(entities = [MediaItemModel::class], version = 8, exportSchema = false)
+@Database(entities = [MediaGalleryEntity::class], version = 11, exportSchema = false)
 abstract class MediaGalleryDatabase: RoomDatabase() {
-    abstract fun mediaItemDao(): MediaItemDao
+    abstract fun mediaItemDao(): MediaGalleryDao
 }

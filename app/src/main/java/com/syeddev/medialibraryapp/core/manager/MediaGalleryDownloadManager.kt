@@ -52,7 +52,6 @@ class MediaGalleryDownloadManagerImpl(
         return downloadManager.enqueue(request)
     }
 
-
     private fun createValidFileName(title: String, mediaType: String): String {
         val extension = when {
             mediaType.contains("image") -> ".jpg"

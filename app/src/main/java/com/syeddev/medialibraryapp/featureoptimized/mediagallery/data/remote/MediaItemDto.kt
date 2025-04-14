@@ -1,6 +1,6 @@
-package com.syeddev.medialibraryapp.features.mediagallery.data.model
+package com.syeddev.medialibraryapp.featureoptimized.mediagallery.data.remote
 
-data class MediaItemFireStoreModel(
+data class MediaItemDto(
     val id: Long = 0L,
     val title: String = "",
     val mediaType: String = "",
