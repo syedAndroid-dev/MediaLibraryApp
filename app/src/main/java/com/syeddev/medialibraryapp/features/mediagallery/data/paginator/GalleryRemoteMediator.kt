@@ -52,7 +52,7 @@ class GalleryRemoteMediator(
                 Log.e("Room Data", "Inserted into Room: $count items")
             }
 
-            Log.e("insidePaginationCalling","Inside Pagination Calling.. ${response?.isEmpty()}")
+          //  Log.e("insidePaginationCalling","Inside Pagination Calling.. ${response?.isEmpty()}")
             MediatorResult.Success(endOfPaginationReached = response?.isEmpty() == true)
         } catch (exception: Exception) {
             MediatorResult.Error(exception)
